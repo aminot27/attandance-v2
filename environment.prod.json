@@ -1,0 +1,18 @@
+{
+  "default": {
+    "ENGINE": "django.db.backends.postgresql_psycopg2",
+    "HOST": "172.18.0.3",
+    "PORT": "5432",
+    "NAME": "tech_store_db",
+    "USER": "postgres",
+    "PASSWORD": "p05tgre5@D4t4"
+  },
+  "appx": {
+    "HOST": "ip",
+    "PORT": "3306",
+    "NAME": "db_appx",
+    "USER": "root",
+    "PASSWORD": "mysql",
+    "ENGINE": "django.db.backends.mysql"
+  }
+}

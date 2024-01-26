@@ -1,0 +1,50 @@
+###### Base
+pip
+####### World timezone definitions, modern and historical ########
+pytz==2020.1
+
+######## python image manager ########
+Pillow==9.1.1
+
+######## python pdf manager ########
+pypdf2
+
+######### postgresql driver ########
+psycopg2==2.9.1  # https://github.com/psycopg/psycopg2
+#psycopg2==2.9.1 --no-binary psycopg2
+#psycopg2-binary ## if psycopg2 (libpq-dev) dependencies is required
+
+######### Django ########
+django==4
+
+######### Environment handler ########
+django-environ-2
+
+######### Django REST Framework ########
+djangorestframework==3.12.4
+djangorestframework-simplejwt==4.7.1
+pyjwt==2.1.0
+
+######### Documentation for Web APIs made with Django 2.0 & 3.0 and DRF ########
+drfdocs2==0.0.14
+
+######### Swagger/OpenAPI 2.0 schemas from DRF #########
+swagger-spec-validator==2.7.3
+drf-yasg==1.20.0
+
+########## Other extensions #########
+django-filter==2.4.0
+django-cors-headers==3.7.0
+requests==2.25.1
+########## Extensible application providing user registration ##########
+django-registration==3.2
+
+
+
+########### The secure Argon2 password hashing algorithm. ###########
+argon2-cffi==20.1.0
+
+########### Radically simplified static file serving for WSGI applications ###########
+whitenoise==5.2.0
+
+uvicorn[standard]==0.14.0  # https://github.com/encode/uvicorn

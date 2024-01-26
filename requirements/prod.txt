@@ -1,0 +1,11 @@
+# PRECAUTION: avoid production dependencies that aren't in development
+
+-r ./base.txt
+
+gunicorn==20.1.0
+
+# Static files Support for many storage backends in Django
+django-storages[boto3]==1.7.1
+
+# Email
+django-anymail[mailgun]==8.4

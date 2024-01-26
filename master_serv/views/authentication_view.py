@@ -1,0 +1,1 @@
+from rest_framework_simplejwt.views import TokenViewBasefrom master_serv.serializers.authentication_serializer import AuthenticationSerializerclass AuthenticationView(TokenViewBase):    serializer_class = AuthenticationSerializer

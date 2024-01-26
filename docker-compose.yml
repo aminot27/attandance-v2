@@ -1,0 +1,37 @@
+version: "3.1"
+
+services:
+  portainer:
+    # docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
+    container_name: portainer
+    image: portainer/portainer-ce:latest
+    command: -H unix:///var/run/docker.sock
+    restart: always
+    ports:
+      #- "9443:9443" # Use this port for HTTPS connections
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+
+  sonarqube:
+    image: sonarqube:latest
+    container_name: sonarqube
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+    ports:
+      - "9000:9000"
+  pg_datasource:
+    container_name: pg_datasource
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: p05tgre5@D4t4
+      POSTGRES_USER: postgres
+      POSTGRES_DB: tech_store_db
+    ports:
+      - 5432:5432
+volumes:
+  tech_store_media:
+    external: true
+  portainer_data:
