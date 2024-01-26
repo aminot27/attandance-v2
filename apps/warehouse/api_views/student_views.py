@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import APIException, NotFound, ValidationError
 
+from apps.warehouse.models.parent_model import Parent
 from apps.warehouse.models.student_model import Student
 from apps.warehouse.repositories.student_repository import StudentRepository
 from apps.warehouse.serializers.student_serializers import (
@@ -39,6 +40,7 @@ class StudentsView(BaseAPIView):
             return SuccessResponse(
                 data_=StudentDynamicResponse(students, many=True, fields=values).data).send()
 
+
 class StudentView(BaseAPIView):
     permission_classes = [IsAuthenticated]
     student_repository = StudentRepository()
@@ -46,11 +48,20 @@ class StudentView(BaseAPIView):
     @swagger_auto_schema(request_body=StudentCreateRequest, responses={status.HTTP_200_OK: StudentSerializer()})
     def post(self, request):
         create_data = super().get_request_data(StudentCreateRequest(data=request.data))
+        parent_id = create_data.get('parent')
+        try:
+            parent_instance = Parent.objects.get(pk=parent_id)
+        except Parent.DoesNotExist:
+            raise NotFound(detail="Parent not found")
+
+        create_data['parent'] = parent_instance
+
         try:
             student = self.student_repository.create_student(create_data)
             return SuccessResponse(data_=StudentSerializer(student).data).send()
-        except:
-            raise APIException(detail="Error creating student")
+        except Exception as e:
+            # Maneja cualquier otro error que pueda ocurrir durante la creación del estudiante
+            raise APIException(detail=f"Error creating student: {e}")
 
 class StudentDetailView(BaseAPIView):
     permission_classes = [IsAuthenticated]
