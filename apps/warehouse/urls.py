@@ -6,6 +6,7 @@ from apps.warehouse.api_views.attendace_record_views import AttendanceRecordView
 from apps.warehouse.api_views.location_record_views import LocationRecordView, LocationRecordsView, \
     LocationRecordDetailView
 from apps.warehouse.api_views.parent_views import ParentView, ParentsView, ParentDetailView
+from apps.warehouse.api_views.shift_views import ShiftView, ShiftsView, ShiftDetailView
 from apps.warehouse.api_views.student_views import (
     StudentView,
     StudentsView,
@@ -34,5 +35,8 @@ urlpatterns = [
     path('parents/filter/', ParentsView.as_view(), name='filter_parents'),
     path('parent/<int:pk>/', ParentDetailView.as_view(), name='modify_parent'),
 
+    path('shift/', ShiftView.as_view(), name='create_shift'),
+    path('shifts/filter/', ShiftsView.as_view(), name='filter_shifts'),
+    path('shift/<int:pk>/', ShiftDetailView.as_view(), name='modify_shift'),
 
 ]

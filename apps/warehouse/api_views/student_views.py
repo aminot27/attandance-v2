@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import APIException, NotFound, ValidationError
 
 from apps.warehouse.models.parent_model import Parent
+from apps.warehouse.models.shift_model import Shift
 from apps.warehouse.models.student_model import Student
 from apps.warehouse.repositories.student_repository import StudentRepository
 from apps.warehouse.serializers.student_serializers import (
@@ -49,12 +50,20 @@ class StudentView(BaseAPIView):
     def post(self, request):
         create_data = super().get_request_data(StudentCreateRequest(data=request.data))
         parent_id = create_data.get('parent')
+        shift_id = create_data.get('shift')
         try:
             parent_instance = Parent.objects.get(pk=parent_id)
         except Parent.DoesNotExist:
             raise NotFound(detail="Parent not found")
 
+        try:
+            shift_instance = Shift.objects.get(pk=shift_id)
+        except Parent.DoesNotExist:
+            raise NotFound(detail="Shift not found")
+
+
         create_data['parent'] = parent_instance
+        create_data['shift'] = shift_instance
 
         try:
             student = self.student_repository.create_student(create_data)
