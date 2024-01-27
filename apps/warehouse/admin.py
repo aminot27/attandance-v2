@@ -3,6 +3,7 @@ from apps.warehouse.models.academy_model import Academy
 from apps.warehouse.models.attendance_record_model import AttendanceRecord
 from apps.warehouse.models.location_record_model import LocationRecord
 from apps.warehouse.models.parent_model import Parent
+from apps.warehouse.models.shift_model import Shift
 from apps.warehouse.models.student_model import Student
 
 
@@ -29,3 +30,8 @@ class ParentAdmin(admin.ModelAdmin):
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
     list_display = [field.name for field in Student._meta.fields]
+
+
+@admin.register(Shift)
+class ShiftAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in Shift._meta.fields]
