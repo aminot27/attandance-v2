@@ -5,7 +5,7 @@ from master_serv.serializers.dynamic_field_serializer import DynamicFieldsModelS
 class AttendanceRecordSerializer(serializers.ModelSerializer):
     class Meta:
         model = AttendanceRecord
-        fields = '__all__'
+        fields = ['student', 'shift', 'entry_time', 'status']
 
 class AttendanceRecordDynamicResponse(DynamicFieldsModelSerializer):
     class Meta:
@@ -15,12 +15,12 @@ class AttendanceRecordDynamicResponse(DynamicFieldsModelSerializer):
 class AttendanceRecordDynamicRequest(DynamicFieldsModelSerializer):
     class Meta:
         model = AttendanceRecord
-        fields = ('student', 'date', 'status')
+        fields = ('student', 'entry_time', 'shift')
 
 class AttendanceRecordBasicSerializer(serializers.ModelSerializer):
     class Meta:
         model = AttendanceRecord
-        fields = ('student', 'date', 'status')
+        fields = ('student', 'entry_time', 'status', 'shift')
 
 class AttendanceRecordCreateRequest(serializers.ModelSerializer):
     class Meta:

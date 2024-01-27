@@ -102,6 +102,26 @@ def add_initial_modules(apps, schem_editor):
         icon="cilClipboard",
     )
 
+    Module.objects.create(
+        system=system,
+        name="Padres",
+        description="Gestión de padres",
+        version="1.0",
+        url="/parent",
+        order=3,
+        icon="cilClipboard",
+    )
+
+    Module.objects.create(
+        system=system,
+        name="Estudiantes",
+        description="Gestión de estudiantes",
+        version="1.0",
+        url="/student",
+        order=4,
+        icon="cilClipboard",
+    )
+
 def add_initial_access(apps, schem_editor):
     Access = apps.get_model('master', 'Access')
     Module = apps.get_model('master', 'Module')
@@ -109,6 +129,8 @@ def add_initial_access(apps, schem_editor):
 
     module_attendance = Module.objects.get(name="Asistencia")
     module_shift = Module.objects.get(name="Turnos")
+    module_parent = Module.objects.get(name="Padres")
+    module_student = Module.objects.get(name="Estudiantes")
     profile = Profile.objects.first()
 
     Access.objects.create(
@@ -121,6 +143,15 @@ def add_initial_access(apps, schem_editor):
         profile=profile
     )
 
+    Access.objects.create(
+        module=module_parent,
+        profile=profile
+    )
+
+    Access.objects.create(
+        module=module_student,
+        profile=profile
+    )
 
 
 class Migration(migrations.Migration):

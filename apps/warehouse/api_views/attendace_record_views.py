@@ -4,7 +4,9 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import APIException, NotFound, ValidationError
 
+from apps.warehouse.models.shift_model import Shift
 from apps.warehouse.models.attendance_record_model import AttendanceRecord
+from apps.warehouse.models.student_model import Student
 from apps.warehouse.repositories.attendance_record_repository import AttendanceRecordRepository
 from apps.warehouse.serializers.attendance_record_serializers import (
     AttendanceRecordSerializer,
@@ -46,11 +48,27 @@ class AttendanceRecordView(BaseAPIView):
     @swagger_auto_schema(request_body=AttendanceRecordCreateRequest, responses={status.HTTP_200_OK: AttendanceRecordSerializer()})
     def post(self, request):
         create_data = super().get_request_data(AttendanceRecordCreateRequest(data=request.data))
+        student_id = create_data.get('student')
+        shift_id = create_data.get('shift')
+
+        try:
+            student_instance = Student.objects.get(pk=student_id)
+        except Student.DoesNotExist:
+            raise NotFound(detail="Student not found")
+
+        try:
+            shift_instance = Shift.objects.get(pk=shift_id)
+        except Shift.DoesNotExist:
+            raise NotFound(detail="Shift not found")
+
+        create_data['student'] = student_instance
+        create_data['shift'] = shift_instance
+
         try:
             attendance_record = self.attendance_record_repository.create_attendance_record(create_data)
             return SuccessResponse(data_=AttendanceRecordSerializer(attendance_record).data).send()
-        except:
-            raise APIException(detail="Error creating attendance record")
+        except Exception as e:
+            raise APIException(detail=f"Error creating attendance record: {e}")
 
 class AttendanceRecordDetailView(BaseAPIView):
     permission_classes = [IsAuthenticated]
@@ -68,7 +86,7 @@ class AttendanceRecordDetailView(BaseAPIView):
     def put(self, request, pk):
         try:
             update_data = super().get_request_data(serialized_request=AttendanceRecordUpdateRequest(data=request.data))
-            attendance_record = self.attendance_record_repository.update_attendance_record(attendance_id=pk, attendance_record=update_data)
+            attendance_record = self.attendance_record_repository.update_attendance_record(attendance_id=pk, attendance_data=update_data)
             if attendance_record is None:
                 raise NotFound(detail="Attendance record not found")
             else:

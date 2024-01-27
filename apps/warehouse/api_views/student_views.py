@@ -58,7 +58,7 @@ class StudentView(BaseAPIView):
 
         try:
             shift_instance = Shift.objects.get(pk=shift_id)
-        except Parent.DoesNotExist:
+        except Shift.DoesNotExist:
             raise NotFound(detail="Shift not found")
 
 
