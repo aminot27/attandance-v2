@@ -1,15 +1,15 @@
-from rest_framework.views import APIView
+from django.utils.timezone import localtime, now
+from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.permissions import IsAuthenticated
-from drf_yasg.utils import swagger_auto_schema
-from rest_framework import status
-from django.utils.timezone import localtime
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import status
+from drf_yasg.utils import swagger_auto_schema
 from apps.warehouse.models.student_model import Student
 from apps.warehouse.models.shift_model import Shift
 from apps.warehouse.models.attendance_record_model import AttendanceRecord
 from apps.warehouse.serializers.scan_dni_serializers import ScanDniRequestSerializer, AttendanceRecordDniSerializer
 from master_serv.utils.success_response import SuccessResponse
-from rest_framework.exceptions import NotFound, ValidationError
 
 class ScanDniView(APIView):
     permission_classes = [IsAuthenticated]
@@ -24,14 +24,33 @@ class ScanDniView(APIView):
             except Student.DoesNotExist:
                 raise NotFound(detail="Estudiante no encontrado")
 
-            now = localtime()
-            shifts = Shift.objects.filter(start_time__lte=now, end_time__gte=now)
-            shift = shifts.first()
-            if not shift:
-                raise ValidationError({'error': 'No hay turnos activos en este momento'})
+            now_time = localtime(now()).time()
+            shifts = Shift.objects.all()
+            current_shift = None
+            for shift in shifts:
+                if shift.start_time <= now_time <= shift.end_time:
+                    current_shift = shift
+                    break
 
-            attendance_record = AttendanceRecord(student=student, shift=shift)
-            attendance_record.save()
+            if not current_shift:
+                return Response({'message': 'No hay turnos activos en este momento o el estudiante no está asignado a ningún turno.'},
+                                status=status.HTTP_200_OK)
+
+            attendance_record, created = AttendanceRecord.objects.get_or_create(
+                student=student,
+                shift=current_shift,
+                defaults={'status': 'Absent'}  # Inicializa con 'Absent'
+            )
+
+            if created or attendance_record.status == 'Absent':
+                # Aquí puedes ajustar la lógica para cambiar el estado basado en la hora actual y los intervalos del turno
+                if current_shift.early_start <= now_time <= current_shift.early_end:
+                    attendance_record.status = 'Present'
+                elif current_shift.late_start <= now_time <= current_shift.late_end:
+                    attendance_record.status = 'Late'
+                # Ajusta según sea necesario para otros intervalos de tiempo
+
+                attendance_record.save()
 
             return SuccessResponse(data_=AttendanceRecordDniSerializer(attendance_record).data).send()
         else:

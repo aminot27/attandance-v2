@@ -42,5 +42,3 @@ urlpatterns = [
 
     path('scan/', ScanDniView.as_view(), name='scan_attendance'),
 ]
-
-#hi
