@@ -6,7 +6,7 @@ from master_serv.models.base_model import BaseModel
 from django.utils.timezone import localtime
 
 # Asumiendo que estos son los tipos de estado definidos previamente
-status_types = [('Early', 'Temprano'), ('Late', 'Tarde'), ('Present', 'Presente'), ('Absent', 'Ausente')]
+status_types = [('Early', 'Temprano'), ('Late', 'Tarde'), ('Absent', 'Ausente')]
 
 class AttendanceRecord(BaseModel):
     attendance_id = models.AutoField(verbose_name='ID', primary_key=True)
@@ -51,6 +51,6 @@ class AttendanceRecord(BaseModel):
             elif self.shift.late_start and self.shift.late_end and self.shift.late_start <= entry_time_hour <= self.shift.late_end:
                 self.status = 'Late'
             elif self.shift.start_time <= entry_time_hour <= self.shift.end_time:
-                self.status = 'Present'
+                self.status = 'Absent'
             else:
                 self.status = 'Absent'

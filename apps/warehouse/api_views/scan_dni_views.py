@@ -53,7 +53,7 @@ class ScanDniView(APIView):
             # Actualiza el estado si el registro es nuevo o el estudiante estaba marcado como ausente
             if created or attendance_record.status == 'Absent':
                 if current_shift.early_start <= now_time <= current_shift.early_end:
-                    attendance_record.status = 'Present'
+                    attendance_record.status = 'Absent'
                 elif current_shift.late_start <= now_time <= current_shift.late_end:
                     attendance_record.status = 'Late'
                 attendance_record.save()
