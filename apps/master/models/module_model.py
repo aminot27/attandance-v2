@@ -12,7 +12,7 @@ class Module(BaseModel):
     version = models.CharField(max_length=10, blank=True, null=True)
     url = models.CharField(max_length=100, blank=True, null=True)
     order = models.IntegerField(blank=False, null=False)
-    icon = models.CharField(max_length=30, blank=True, null=True)
+    icon = models.CharField(max_length=30, blank=True, null=True) 
 
     class Meta:
         db_table = 'master_module'

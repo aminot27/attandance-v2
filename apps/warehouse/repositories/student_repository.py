@@ -18,8 +18,8 @@ class StudentRepository:
         return Student.objects.create_one(**student_data)
 
     @staticmethod
-    def update_student(student_id, student_data):
-        return Student.objects.update_one(obj_primary_key=student_id, **student_data)
+    def update_student(student_id, student):
+        return Student.objects.update_one(obj_primary_key=student_id, **student)
 
     @staticmethod
     def log_delete_student(student_id):

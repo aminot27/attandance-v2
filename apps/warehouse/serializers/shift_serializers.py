@@ -19,10 +19,10 @@ class ShiftDynamicRequest(DynamicFieldsModelSerializer):
         fields = '__all__'  # Actualizado para incluir todos los campos, ajusta según necesidad
 
 class ShiftBasicSerializer(serializers.ModelSerializer):
-    # Actualiza este serializador si necesitas incluir los nuevos campos en una versión "básica"
+    # Actualiza este serializador para incluir los nuevos campos en una versión "básica"
     class Meta:
         model = Shift
-        fields = ('start_time', 'end_time', 'early_tolerance_until', 'late_tolerance_until')  # Campos actualizados
+        fields = ('start_time', 'end_time', 'early_start', 'early_end', 'late_start', 'late_end', 'leave_start', 'leave_end')  # Campos actualizados
 
 class ShiftCreateRequest(serializers.ModelSerializer):
     class Meta:

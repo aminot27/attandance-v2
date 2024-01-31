@@ -50,6 +50,7 @@ class AttendanceRecordView(BaseAPIView):
         create_data = super().get_request_data(AttendanceRecordCreateRequest(data=request.data))
         student_id = create_data.get('student')
         shift_id = create_data.get('shift')
+        exit_time = create_data.get('exit_time', None)
 
         try:
             student_instance = Student.objects.get(pk=student_id)
@@ -63,6 +64,7 @@ class AttendanceRecordView(BaseAPIView):
 
         create_data['student'] = student_instance
         create_data['shift'] = shift_instance
+        create_data['exit_time'] = exit_time
 
         try:
             attendance_record = self.attendance_record_repository.create_attendance_record(create_data)

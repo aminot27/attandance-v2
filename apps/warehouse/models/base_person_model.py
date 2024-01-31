@@ -5,7 +5,7 @@ class BasePerson(BaseModel):
     name = models.CharField(max_length=255, verbose_name='Name')
     last_name = models.CharField(max_length=255, verbose_name='Last Name')
     gender = models.CharField(max_length=1, choices=[('M', 'Male'), ('F', 'Female')], verbose_name='Gender')
-    dni = models.CharField(max_length=8, unique=True, verbose_name='DNI')
+    dni = models.CharField(max_length=8, verbose_name='DNI')
     phone_number = models.CharField(max_length=20, verbose_name='Phone Number')
 
     class Meta(BaseModel.Meta):

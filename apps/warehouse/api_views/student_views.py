@@ -1,3 +1,5 @@
+import traceback
+
 from django.core.exceptions import FieldError
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
@@ -94,6 +96,8 @@ class StudentDetailView(BaseAPIView):
             else:
                 return SuccessResponse(data_=StudentSerializer(student).data).send()
         except:
+            tb = traceback.format_exc()
+            print(tb)
             raise APIException()
 
     def delete(self, request, pk):
