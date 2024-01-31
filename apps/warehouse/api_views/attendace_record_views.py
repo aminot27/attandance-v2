@@ -1,3 +1,6 @@
+
+from django.utils import timezone
+
 from django.core.exceptions import FieldError
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
@@ -52,6 +55,7 @@ class AttendanceRecordView(BaseAPIView):
         shift_id = create_data.get('shift')
         exit_time = create_data.get('exit_time', None)
 
+
         try:
             student_instance = Student.objects.get(pk=student_id)
         except Student.DoesNotExist:
@@ -65,6 +69,7 @@ class AttendanceRecordView(BaseAPIView):
         create_data['student'] = student_instance
         create_data['shift'] = shift_instance
         create_data['exit_time'] = exit_time
+        create_data['entry_time'] = timezone.now()
 
         try:
             attendance_record = self.attendance_record_repository.create_attendance_record(create_data)

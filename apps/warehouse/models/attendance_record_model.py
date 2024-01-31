@@ -3,6 +3,7 @@ from django.utils.timezone import now
 from apps.warehouse.models.shift_model import Shift
 from apps.warehouse.models.student_model import Student
 from master_serv.models.base_model import BaseModel
+from django.utils.timezone import localtime
 
 # Asumiendo que estos son los tipos de estado definidos previamente
 status_types = [('Early', 'Temprano'), ('Late', 'Tarde'), ('Present', 'Presente'), ('Absent', 'Ausente')]
@@ -31,17 +32,25 @@ class AttendanceRecord(BaseModel):
         super().save(*args, **kwargs)
 
     def determine_status(self):
+        # Ajuste para manejar DateTimeField
         if self.entry_time and self.shift:
-            entry_time = self.entry_time.time()
-            print(entry_time)
-            print(self.early_start)
-            print(self.early_end)
-            # Utiliza los nuevos campos del modelo Shift
-            if self.shift.early_start and self.shift.early_end and self.shift.early_start <= entry_time <= self.shift.early_end:
+            print(f"Entry Time: {self.entry_time}")
+            print(f"Shift Start Time: {self.shift.start_time}")
+            print(f"Shift End Time: {self.shift.end_time}")
+            print(f"Early Start: {self.shift.early_start}")
+            print(f"Early End: {self.shift.early_end}")
+            print(f"Late Start: {self.shift.late_start}")
+            print(f"Late End: {self.shift.late_end}")
+
+            local_entry_time = localtime(self.entry_time)
+            entry_time_hour = local_entry_time.time()
+
+            # Ahora utiliza entry_time_hour para las comparaciones
+            if self.shift.early_start and self.shift.early_end and self.shift.early_start <= entry_time_hour <= self.shift.early_end:
                 self.status = 'Early'
-            elif self.shift.late_start and self.shift.late_end and self.shift.late_start <= entry_time <= self.shift.late_end:
+            elif self.shift.late_start and self.shift.late_end and self.shift.late_start <= entry_time_hour <= self.shift.late_end:
                 self.status = 'Late'
-            elif self.shift.start_time <= entry_time <= self.shift.end_time:
+            elif self.shift.start_time <= entry_time_hour <= self.shift.end_time:
                 self.status = 'Present'
             else:
                 self.status = 'Absent'
