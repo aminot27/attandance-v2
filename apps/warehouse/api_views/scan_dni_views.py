@@ -10,7 +10,8 @@ from apps.warehouse.models.shift_model import Shift
 from apps.warehouse.models.attendance_record_model import AttendanceRecord
 from apps.warehouse.serializers.scan_dni_serializers import ScanDniRequestSerializer, AttendanceRecordDniSerializer
 from master_serv.utils.success_response import SuccessResponse
-
+from twilio.rest import Client
+from django.utils.timezone import localtime, get_default_timezone
 
 class ScanDniView(APIView):
     permission_classes = [IsAuthenticated]
@@ -53,11 +54,50 @@ class ScanDniView(APIView):
             # Actualiza el estado si el registro es nuevo o el estudiante estaba marcado como ausente
             if created or attendance_record.status == 'Absent':
                 if current_shift.early_start <= now_time <= current_shift.early_end:
-                    attendance_record.status = 'Absent'
+                    attendance_record.status = 'Temprano'  # Corregido para asignar 'Early'
                 elif current_shift.late_start <= now_time <= current_shift.late_end:
-                    attendance_record.status = 'Late'
+                    attendance_record.status = 'Tarde'
+                else:
+                    # Si no cae en ninguno de los intervalos anteriores, considerar 'On Time'
+                    attendance_record.status = 'On Time'
                 attendance_record.save()
 
+            student_name = student.name
+            student_dni = student.dni
+            action = "entry" if created else "exit"
+            time = attendance_record.entry_time if action == "entry" else attendance_record.exit_time
+            attendance_status = attendance_record.status
+            sendSms(student_dni, action, time, attendance_status)
             return SuccessResponse(data_=AttendanceRecordDniSerializer(attendance_record).data).send()
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+def sendSms(student_dni, action, time, status):
+    account_sid = 'ACbc58ad6b0a5ac0c5e6964881275e4cbe'
+    auth_token = 'cc9ae90856073abffeabcce3c0278f2a'
+    client = Client(account_sid, auth_token)
+
+    try:
+        student = Student.objects.get(dni=student_dni)
+        parent_phone_number = student.parent.phone_number
+    except Student.DoesNotExist:
+        print("Estudiante no encontrado")
+        return
+
+    local_entry_time = localtime(time, get_default_timezone())
+    formatted_time = local_entry_time.strftime('%H:%M')
+
+    if action == "entry":
+        body_message = f" \nINFORME DE ASISTENCIA\n Nombre: {student.name}, \n Hora Entrada: {formatted_time}. \n Estado: {status}"
+    #elif action == "exit":
+        #body_message = f" \nINFORME DE ASISTENCIA\n Nombre: {student.name}, \n  Hora Salida: {formatted_time}."
+    #else:
+        #body_message = "Acción no reconocida."
+
+        message = client.messages.create(
+            from_='+16592175883',
+            body=body_message,
+            to=f'+51{parent_phone_number}'
+        )
+
+        print(message.sid)

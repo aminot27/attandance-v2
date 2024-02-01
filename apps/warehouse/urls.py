@@ -1,5 +1,7 @@
 from django.urls import path
 
+from apps.warehouse.api_views.HikCentralAccessRecord import HikCentralAccessRecordView, HikCentralAccessRecordsView, \
+    HikCentralAccessRecordDetailView
 from apps.warehouse.api_views.academy_views import AcademyView, AcademiesView, AcademyDetailView
 from apps.warehouse.api_views.attendace_record_views import AttendanceRecordView, AttendanceRecordsView, \
     AttendanceRecordDetailView
@@ -41,4 +43,8 @@ urlpatterns = [
     path('shift/<int:pk>/', ShiftDetailView.as_view(), name='modify_shift'),
 
     path('scan/', ScanDniView.as_view(), name='scan_attendance'),
+
+    path('hikcentral_access_record/', HikCentralAccessRecordView.as_view(), name='create_hikcentral_access_record'),
+    path('hikcentral_access_records/filter/', HikCentralAccessRecordsView.as_view(), name='filter_hikcentral_access_records'),
+    path('hikcentral_access_record/<int:pk>/', HikCentralAccessRecordDetailView.as_view(), name='modify_hikcentral_access_record'),
 ]
