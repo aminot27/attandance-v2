@@ -74,7 +74,7 @@ class ScanDniView(APIView):
 
 def sendSms(student_dni, action, time, status):
     account_sid = 'ACbc58ad6b0a5ac0c5e6964881275e4cbe'
-    auth_token = 'cc9ae90856073abffeabcce3c0278f2a'
+    auth_token = '4759a8f614c076955f56eed09fad331a'
     client = Client(account_sid, auth_token)
 
     try:
@@ -88,7 +88,7 @@ def sendSms(student_dni, action, time, status):
     formatted_time = local_entry_time.strftime('%H:%M')
 
     if action == "entry":
-        body_message = f" \nINFORME DE ASISTENCIA\n Nombre: {student.name}, \n Hora Entrada: {formatted_time}. \n Estado: {status}"
+        body_message = f" \nINFORME DE ASISTENCIA\n Nombre: {student.name}, \n Hora Entrada: {formatted_time}"
     #elif action == "exit":
         #body_message = f" \nINFORME DE ASISTENCIA\n Nombre: {student.name}, \n  Hora Salida: {formatted_time}."
     #else:
