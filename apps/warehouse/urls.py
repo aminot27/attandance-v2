@@ -15,6 +15,7 @@ from apps.warehouse.api_views.student_views import (
     StudentsView,
     StudentDetailView
 )
+from apps.warehouse.api_views.weekly_shift_views import WeeklyShiftView, WeeklyShiftDetailView
 
 urlpatterns = [
     path('student/', StudentView.as_view(), name='create_student'),
@@ -41,6 +42,10 @@ urlpatterns = [
     path('shift/', ShiftView.as_view(), name='create_shift'),
     path('shifts/filter/', ShiftsView.as_view(), name='filter_shifts'),
     path('shift/<int:pk>/', ShiftDetailView.as_view(), name='modify_shift'),
+
+    #path('weekly_shift/', WeeklyShiftView.as_view(), name='create_weekly_shift'),
+    #path('weekly_shifts/filter/', WeeklyShiftView.as_view(), name='filter_weekly_shifts'),
+    #path('weekly_shift/<int:pk>/', WeeklyShiftDetailView.as_view(), name='modify_weekly_shift'),
 
     path('scan/', ScanDniView.as_view(), name='scan_attendance'),
 

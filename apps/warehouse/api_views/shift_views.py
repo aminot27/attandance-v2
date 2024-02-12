@@ -1,3 +1,5 @@
+import traceback
+
 from django.core.exceptions import FieldError
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
@@ -75,6 +77,8 @@ class ShiftDetailView(BaseAPIView):
             else:
                 return SuccessResponse(data_=ShiftSerializer(shift).data).send()
         except:
+            tb = traceback.format_exc()
+            print(tb)
             raise APIException()
 
 

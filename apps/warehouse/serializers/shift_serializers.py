@@ -22,7 +22,7 @@ class ShiftBasicSerializer(serializers.ModelSerializer):
     # Actualiza este serializador para incluir los nuevos campos en una versión "básica"
     class Meta:
         model = Shift
-        fields = ('start_time', 'end_time', 'early_start', 'early_end', 'late_start', 'late_end', 'leave_start', 'leave_end')  # Campos actualizados
+        fields = ('name', 'start_time', 'end_time', 'entry_start', 'entry_end', 'early_until', 'late_until', 'leave_start', 'leave_end')  # Campos actualizados para reflejar el nuevo modelo
 
 class ShiftCreateRequest(serializers.ModelSerializer):
     class Meta:

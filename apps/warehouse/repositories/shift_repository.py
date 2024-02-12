@@ -18,8 +18,8 @@ class ShiftRepository:
         return Shift.objects.create_one(**shift_data)
 
     @staticmethod
-    def update_shift(shift_id, shift_data):
-        return Shift.objects.update_one(obj_primary_key=shift_id, **shift_data)
+    def update_shift(shift_id, shift):
+        return Shift.objects.update_one(obj_primary_key=shift_id, **shift)
 
     @staticmethod
     def log_delete_shift(shift_id):

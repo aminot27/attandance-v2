@@ -41,25 +41,24 @@ class ScanDniView(APIView):
             attendance_record, created = AttendanceRecord.objects.get_or_create(
                 student=student,
                 shift=current_shift,
-                defaults={'status': 'Absent'}  # Inicializa con 'Absent'
+                defaults={'status': 'Falta'}  # Inicializa con 'Absent'
             )
 
             # Verifica si el escaneo ocurre dentro del intervalo de salida
-            if current_shift.leave_start <= now_time <= current_shift.leave_end:
+            if current_shift.leave_start and current_shift.leave_end and current_shift.leave_start <= now_time <= current_shift.leave_end:
                 # Solo actualiza exit_time si el registro ya existe y el estudiante ya marcó entrada
                 if not created and attendance_record.entry_time:
                     attendance_record.exit_time = localtime(now())
                     attendance_record.save()
 
             # Actualiza el estado si el registro es nuevo o el estudiante estaba marcado como ausente
-            if created or attendance_record.status == 'Absent':
-                if current_shift.early_start <= now_time <= current_shift.early_end:
-                    attendance_record.status = 'Temprano'  # Corregido para asignar 'Early'
-                elif current_shift.late_start <= now_time <= current_shift.late_end:
+            if created or attendance_record.status == 'Falta':
+                # Verifica si el estudiante está marcado como 'Early'
+                if current_shift.entry_start and current_shift.entry_end and current_shift.entry_start <= now_time <= current_shift.early_until:
+                    attendance_record.status = 'Temprano'
+                # Verifica si el estudiante está marcado como 'Late'
+                elif current_shift.late_until and current_shift.early_until < now_time <= current_shift.late_until:
                     attendance_record.status = 'Tarde'
-                else:
-                    # Si no cae en ninguno de los intervalos anteriores, considerar 'On Time'
-                    attendance_record.status = 'On Time'
                 attendance_record.save()
 
             student_name = student.name
@@ -87,17 +86,12 @@ def sendSms(student_dni, action, time, status):
     local_entry_time = localtime(time, get_default_timezone())
     formatted_time = local_entry_time.strftime('%H:%M')
 
-    if action == "entry":
-        body_message = f" \nINFORME DE ASISTENCIA\n Nombre: {student.name}, \n Hora Entrada: {formatted_time}"
-    #elif action == "exit":
-        #body_message = f" \nINFORME DE ASISTENCIA\n Nombre: {student.name}, \n  Hora Salida: {formatted_time}."
-    #else:
-        #body_message = "Acción no reconocida."
+    body_message = f"\nINFORME DE ASISTENCIA\nNombre: {student.name},\nHora {('Entrada' if action == 'entry' else 'Salida')}: {formatted_time},\nEstado: {status}."
 
-        message = client.messages.create(
-            from_='+16592175883',
-            body=body_message,
-            to=f'+51{parent_phone_number}'
-        )
+    message = client.messages.create(
+        from_='+16592175883',
+        body=body_message,
+        to=f'+51{parent_phone_number}'
+    )
 
-        print(message.sid)
+    print(message.sid)
