@@ -98,7 +98,7 @@ def add_initial_modules(apps, schem_editor):
         description="Gestión de asistencia",
         version="1.0",
         url="/attendance",
-        order=2,
+        order=4,
         icon="cilClipboard",
     )
 
@@ -108,7 +108,7 @@ def add_initial_modules(apps, schem_editor):
         description="Gestión de padres",
         version="1.0",
         url="/parent",
-        order=3,
+        order=2,
         icon="cilClipboard",
     )
 
@@ -118,7 +118,7 @@ def add_initial_modules(apps, schem_editor):
         description="Gestión de estudiantes",
         version="1.0",
         url="/student",
-        order=4,
+        order=3,
         icon="cilClipboard",
     )
 

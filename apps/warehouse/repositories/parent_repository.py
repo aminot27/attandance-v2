@@ -19,8 +19,8 @@ class ParentRepository:
         return Parent.objects.create_one(**parent_data)
 
     @staticmethod
-    def update_parent(parent_id, parent_data):
-        return Parent.objects.update_one(obj_primary_key=parent_id, **parent_data)
+    def update_parent(parent_id, parent):
+        return Parent.objects.update_one(obj_primary_key=parent_id, **parent)
 
     @staticmethod
     def log_delete_parent(parent_id):
