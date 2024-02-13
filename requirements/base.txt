@@ -38,7 +38,7 @@ django-cors-headers==3.7.0
 requests==2.25.1
 ########## Extensible application providing user registration ##########
 django-registration==3.2
-
+celery==5.3.6
 
 
 ########### The secure Argon2 password hashing algorithm. ###########

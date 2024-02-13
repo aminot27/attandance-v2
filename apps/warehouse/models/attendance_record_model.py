@@ -14,7 +14,8 @@ class AttendanceRecord(BaseModel):
     exit_time = models.DateTimeField(verbose_name='Hora de Salida', null=True, blank=True)
     status = models.CharField(max_length=12, choices=status_types, default='Absent', verbose_name='Estado de Asistencia')
     shift = models.ForeignKey(Shift, on_delete=models.CASCADE, verbose_name='Turno')
-
+    entry_sms_sent = models.BooleanField(default=False)
+    exit_sms_sent = models.BooleanField(default=False)
     class Meta:
         db_table = 'academy_attendance_record'
         ordering = ['attendance_id']

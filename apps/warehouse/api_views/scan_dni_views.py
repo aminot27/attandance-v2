@@ -15,6 +15,7 @@ from master_serv.utils.success_response import SuccessResponse
 from twilio.rest import Client
 from django.utils.timezone import localtime, get_default_timezone
 
+
 class ScanDniView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -57,45 +58,55 @@ class ScanDniView(APIView):
                 )
                 created = True
 
-            # Verifica si el escaneo ocurre dentro del intervalo de salida
-            if current_shift.leave_start and current_shift.leave_end and current_shift.leave_start <= now_time <= current_shift.leave_end:
-                # Solo actualiza exit_time si el registro ya existe y el estudiante ya marcó entrada
-                if not created and attendance_record.entry_time:
-                    attendance_record.exit_time = localtime(now())
-                    attendance_record.save()
+
 
             # Actualiza el estado si el registro es nuevo o el estudiante estaba marcado como ausente
-            if created or attendance_record.status == 'Falta':
-                # Verifica si el estudiante está marcado como 'Early'
-                if current_shift.entry_start and current_shift.entry_end and current_shift.entry_start <= now_time <= current_shift.early_until:
-                    attendance_record.status = 'Temprano'
-                # Verifica si el estudiante está marcado como 'Late'
-                elif current_shift.late_until and current_shift.early_until < now_time <= current_shift.late_until:
-                    attendance_record.status = 'Tarde'
-                attendance_record.save()
-
-            student_name = student.name
             student_dni = student.dni
             action = "entry" if created else "exit"
             time = attendance_record.entry_time if action == "entry" else attendance_record.exit_time
             attendance_status = attendance_record.status
-            # Antes de llamar a sendSms, verifica si es la primera vez que se registra la entrada
+
+            # Verifica si el escaneo ocurre dentro del intervalo de salida
+            if current_shift.leave_start and current_shift.leave_end and current_shift.leave_start <= now_time <= current_shift.leave_end:
+                # Solo actualiza exit_time si el registro ya existe y el estudiante ya marcó entrada
+                if not created and attendance_record.exit_sms_sent == False:
+                    attendance_record.exit_time = localtime(now())
+                    sendSms(student_dni, action, time, attendance_status)
+                    attendance_record.exit_sms_sent = True
+                    attendance_record.save()
 
 
-            if action == "entry" and created:
-                # Esto significa que es la primera vez que el estudiante registra su entrada
-                # y puedes proceder a enviar el SMS
-                sendSms(student_dni, action, time, attendance_status)
-            elif action == "exit":
-                # Para la salida, siempre envía el SMS, ya que se supone que solo se registra una vez
-                sendSms(student_dni, action, time, attendance_status)
+            if created or attendance_record.status == 'Falta':
+                # Verifica si el estudiante está marcado como 'Early'
+                if current_shift.entry_start and current_shift.entry_end and current_shift.entry_start <= now_time <= current_shift.early_until:
+                    attendance_record.status = 'Temprano'
+                    if attendance_record.entry_sms_sent==False:
+                        attendance_record.entry_sms_sent = True
+                        attendance_record.save()
+                        sendSms(student_dni, action, time, attendance_status)
+
+                # Verifica si el estudiante está marcado como 'Late'
+                if current_shift.late_until and current_shift.early_until < now_time <= current_shift.late_until:
+                    attendance_record.status = 'Tarde'
+                    if attendance_record.entry_sms_sent == False:
+                        attendance_record.entry_sms_sent = True
+                        attendance_record.save()
+                        sendSms(student_dni, action, time, attendance_status)
+
+
+                attendance_record.save()
+
+
+
+
             return SuccessResponse(data_=AttendanceRecordDniSerializer(attendance_record).data).send()
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 def sendSms(student_dni, action, time, status):
-    account_sid = 'ACbc58ad6b0a5ac0c5e6964881275e4cbe'
-    auth_token = '7d871a7ccd93a41ed5a5bd15994977e5'
+    account_sid = 'ACe4bb16d30ce19463ba239de83025c3a0'
+    auth_token = '26eaf38e1bbcb3d691a3339d04bfd0e4'
     client = Client(account_sid, auth_token)
 
     try:
@@ -115,7 +126,7 @@ def sendSms(student_dni, action, time, status):
         body_message = f"\nINFORME DE ASISTENCIA\nNombre: {student.name},\nHora Salida: {formatted_time}."
     try:
         message = client.messages.create(
-            from_='+16592175883',
+            from_='+16593364638',
             body=body_message,
             to=f'+51{parent_phone_number}'
         )

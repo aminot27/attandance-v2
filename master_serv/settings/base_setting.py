@@ -5,6 +5,13 @@ from datetime import timedelta
 from pathlib import Path
 import environ
 from master_serv.environments import Environments
+from celery import Celery
+
+#celery conf
+CELERY_TASK_DEFAULT_QUEUE = 'default'
+app = Celery('master_serv')
+app.config_from_object('django.conf:settings', namespace='CELERY')
+app.autodiscover_tasks()
 
 env = environ.Env()
 
