@@ -83,7 +83,7 @@ class ScanDniView(APIView):
                     if attendance_record.entry_sms_sent==False:
                         attendance_record.entry_sms_sent = True
                         attendance_record.save()
-                        sendSms(student_dni, action, time, attendance_status)
+                        sendSms(student_dni, action, time, attendance_record.status)
 
                 # Verifica si el estudiante está marcado como 'Late'
                 if current_shift.late_until and current_shift.early_until < now_time <= current_shift.late_until:
@@ -91,7 +91,7 @@ class ScanDniView(APIView):
                     if attendance_record.entry_sms_sent == False:
                         attendance_record.entry_sms_sent = True
                         attendance_record.save()
-                        sendSms(student_dni, action, time, attendance_status)
+                        sendSms(student_dni, action, time, attendance_record.status)
 
 
                 attendance_record.save()
